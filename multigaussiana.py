@@ -4,21 +4,21 @@ import random
 import matplotlib.pyplot as plt
 import math
 
-mu1=2
+mu1=4
 sigma1=3
-mu2=5
+mu2=12
 sigma2=3.5
 k=2
-puntos=15
+puntos=30
 rango=2*puntos
 nums=np.array([])
 numsy=np.array([])
-lambdac1=random.random()
-muc1=random.randint(0,10)
-sigmac1=random.random()
+lambdac1=0.50+(random.randint(0,9)/100)
+muc1=random.randint(0,5)
+sigmac1=random.randint(1,4)
 lambdac2=1-lambdac1
-muc2=random.randint(0,10)
-sigmac2=random.random()
+muc2=random.randint(8,15)
+sigmac2=random.randint(1,5)
 gmuc1=np.array([muc1])
 gmuc2=np.array([muc2])
 glambdac1=np.array([lambdac1])
@@ -40,6 +40,7 @@ for i in range(puntos):
     nums=np.append(nums,x)
     numsy=np.append(numsy,0)
     
+numsord=sorted(nums)
 #CREACION DE FIGURAS CON MU Y SIGMA DADOS
 plt.subplot(2,2,1)
 plt.title("Gaussianas de valores dados")
@@ -50,7 +51,7 @@ y2=normal(x2,mu2,sigma2)
 plt.plot(x1,y1,'b')
 plt.plot(x2,y2,'g')
 plt.scatter(nums,numsy,color='k')
-plt.xlim(-5,12)
+plt.xlim(0,20)
 plt.ylim(0,0.5)
 
 #CREACION DE FIGURA CON MU Y SIGMA ALEATORIOS
@@ -63,11 +64,11 @@ y2=normal(x2,muc2,sigmac2)
 plt.plot(x1,y1,'b')
 plt.plot(x2,y2,'g')
 plt.scatter(nums,numsy,color='k')
-plt.xlim(-5,12)
+plt.xlim(0,20)
 plt.ylim(0,0.5)
 
 #INICIO DE ITERACIONES
-for j in range(1,5):
+for j in range(1,15):
 
     vrik1=np.zeros((rango))
     vrik2=np.zeros((rango))
@@ -76,6 +77,8 @@ for j in range(1,5):
     sumriks=0
     sumrik1x=0
     sumrik2x=0
+    sumrik1xmu=0
+    sumrik2xmu=0
     #CALCULO DE rik DE CADA PUNTO EN CADA K
     for i in range(rango):
         n1=lambdac1*normal(nums[i],muc1,sigmac1)
@@ -101,19 +104,19 @@ for j in range(1,5):
     muc2old=muc2
     muc1=sumrik1x/sumrik1
     muc2=sumrik2x/sumrik2
-
-
-    sumrik1xmu=0
-    sumrik2xmu=0
     #CALCULO DE NUEVAS SIGMAS
-    for i in range(rango):
-        sumrik1xmu=vrik1[i]*((nums[i]-muc1)**2)+sumrik1xmu
-        sumrik2xmu=vrik2[i]*((nums[i]-muc2)**2)+sumrik2xmu
-
+    for k in range(rango):
+        dif1=nums[k]-muc1
+        dif2=nums[k]-muc2
+        rik1xmu=dif1*dif1*vrik1[k]
+        rik2xmu=dif2*dif2*vrik2[k]
+        sumrik1xmu=rik1xmu+sumrik1xmu
+        sumrik2xmu=rik2xmu+sumrik2xmu
+        
     sigmac1old=sigmac1
     sigmac2old=sigmac2
-    sigmac1=sumrik1xmu/sumrik1
-    sigmac2=sumrik2xmu/sumrik2
+    #sigmac1=sumrik1xmu/sumrik1
+    #sigmac2=sumrik2xmu/sumrik2
 
     gmuc1=np.append(gmuc1,muc1)
     gmuc2=np.append(gmuc2,muc2)
@@ -123,8 +126,25 @@ for j in range(1,5):
     gsigmac2=np.append(gsigmac2,sigmac2)
     xiteracion=np.append(xiteracion,j)
 
-print(gmuc1)
 print(xiteracion)
+print("mu1:")
+print(gmuc1)
+print("mu2:")
+print(gmuc2)
+print("lambda1:")
+print(glambdac1)
+print("lambda2:")
+print(glambdac2)
+print("sigma1:")
+print(gsigmac1)
+print("sigma2:")
+print(gsigmac2)
+
+pr=np.zeros((rango))
+for i in range(rango):
+    norm1=lambdac1*normal(numsord[i],muc1,sigmac1)
+    norm2=lambdac2*normal(numsord[i],muc2,sigmac2)
+    pr[i]=norm1+norm2
 
 #CREACION DE FIGURA CON MU Y SIGMA ENTRENADOS
 plt.subplot(2,2,3)
@@ -133,24 +153,22 @@ x1=np.linspace(muc1-6*sigmac1,muc1+6*sigmac1,100)
 y1=normal(x1,muc1,sigmac1)
 x2=np.linspace(muc2-6*sigmac2,muc2+6*sigmac2,100)    
 y2=normal(x2,muc2,sigmac2)
+plt.plot(numsord,pr,'k')
 plt.plot(x1,y1,'b')
 plt.plot(x2,y2,'g')
 plt.scatter(nums,numsy,color='k')
-plt.xlim(-5,12)
+plt.xlim(0,20)
 plt.ylim(0,0.5)
 
+#CREACION DE FIGURA DE CAMBIO DE DATOS
 plt.subplot(2,2,4)
 plt.title("Modificación de valores")
-
-plt.plot(xiteracion,gmuc1,'b')
-
-plt.plot(xiteracion,gmuc2,'g')
-plt.legend("muk2")
-plt.plot(xiteracion,glambdac1,'r')
-plt.legend("lambdak1")
-plt.plot(xiteracion,glambdac2,'c')
-plt.plot(xiteracion,gsigmac1,'m')
-plt.plot(xiteracion,gsigmac2,'y')
-plt.legend('muk1','muk2')
+plt.plot(xiteracion,gmuc1,'b',label='mu1')
+plt.plot(xiteracion,gmuc2,'g',label='mu2')
+plt.plot(xiteracion,glambdac1,'r',label='lambda1')
+plt.plot(xiteracion,glambdac2,'c',label='lambda2')
+plt.plot(xiteracion,gsigmac1,'m',label='sigma1')
+plt.plot(xiteracion,gsigmac2,'y',label='sigma2')
+plt.legend()
 
 plt.show()
