@@ -9,16 +9,16 @@ sigma1=3
 mu2=12
 sigma2=3.5
 k=2
-puntos=30
+puntos=15
 rango=2*puntos
 nums=np.array([])
 numsy=np.array([])
 lambdac1=0.50+(random.randint(0,9)/100)
-muc1=random.randint(0,5)
-sigmac1=random.randint(1,4)
+muc1=random.randint(0,12)
+sigmac1=random.randint(0,10)
 lambdac2=1-lambdac1
-muc2=random.randint(8,15)
-sigmac2=random.randint(1,5)
+muc2=random.randint(0,12)
+sigmac2=random.randint(0,10)
 gmuc1=np.array([muc1])
 gmuc2=np.array([muc2])
 glambdac1=np.array([lambdac1])
@@ -68,7 +68,7 @@ plt.xlim(0,20)
 plt.ylim(0,0.5)
 
 #INICIO DE ITERACIONES
-for j in range(1,15):
+for j in range(1,5):
 
     vrik1=np.zeros((rango))
     vrik2=np.zeros((rango))
@@ -115,8 +115,8 @@ for j in range(1,15):
         
     sigmac1old=sigmac1
     sigmac2old=sigmac2
-    #sigmac1=sumrik1xmu/sumrik1
-    #sigmac2=sumrik2xmu/sumrik2
+    sigmac1=(sumrik1xmu/sumrik1)**0.5
+    sigmac2=(sumrik2xmu/sumrik2)**0.5
 
     gmuc1=np.append(gmuc1,muc1)
     gmuc2=np.append(gmuc2,muc2)
